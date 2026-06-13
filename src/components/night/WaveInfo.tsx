@@ -1,7 +1,7 @@
 import { useGameStore } from "@/store/useGameStore";
 import { ENEMY_CONFIGS } from "@/game/config";
 import Card from "@/components/common/Card";
-import { Play, Pause, SkipForward } from "lucide-react";
+import { Play, Pause } from "lucide-react";
 
 export default function WaveInfo() {
   const {
@@ -81,14 +81,13 @@ export default function WaveInfo() {
           <button
             onClick={() => {
               if (!waveInProgress) {
-                if (currentWave > 0) nextWave();
                 startWave();
               }
             }}
             className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-lg bg-gradient-to-r from-kitchen-chili to-red-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all animate-pulse-soft"
           >
             <Play className="w-5 h-5 fill-current" />
-            {currentWave === 0 && !waveInProgress ? "开始第1波" : `开始第${currentWave + 1}波`}
+            开始第{currentWave + 1}波
           </button>
         )}
 

@@ -3,7 +3,7 @@ import Card from "@/components/common/Card";
 import { ChefHat, Plus, Minus } from "lucide-react";
 
 export default function MenuPanel() {
-  const { recipes, ingredients, cookRecipe } = useGameStore();
+  const { recipes, ingredients, cookRecipe, cookMax } = useGameStore();
 
   const getIngredient = (id: string) => ingredients.find((i) => i.id === id);
 
@@ -106,11 +106,7 @@ export default function MenuPanel() {
                   批量
                 </button>
                 <button
-                  onClick={() => {
-                    while (canCook(recipe.id)) {
-                      cookRecipe(recipe.id, 1);
-                    }
-                  }}
+                  onClick={() => cookMax(recipe.id)}
                   disabled={!ok}
                   className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                     ok

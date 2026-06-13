@@ -30,6 +30,7 @@ interface GameActions {
 
   buyIngredient: (ingredientId: string, amount: number) => boolean;
   cookRecipe: (recipeId: string, amount: number) => boolean;
+  cookMax: (recipeId: string) => number;
 
   startNight: () => void;
   startDay: () => void;
@@ -206,6 +207,41 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       return { ingredients: newIngredients, recipes: newRecipes };
     });
     return true;
+  },
+
+  cookMax: (recipeId: string) => {
+    const state = get();
+    const recipe = state.recipes.find((r) => r.id === recipeId);
+    if (!recipe) return 0;
+
+    let maxByPrepared = recipe.maxPrepare - recipe.prepared;
+    if (maxByPrepared <= 0) return 0;
+
+    let maxByIngredients = Infinity;
+    for (const req of recipe.ingredients) {
+      const ing = state.ingredients.find((i) => i.id === req.ingredientId);
+      if (!ing) return 0;
+      const canMake = Math.floor(ing.count / req.count);
+      if (canMake < maxByIngredients) maxByIngredients = canMake;
+    }
+
+    const amount = Math.min(maxByPrepared, maxByIngredients);
+    if (amount <= 0) return 0;
+
+    set((s) => {
+      const newIngredients = s.ingredients.map((i) => {
+        const req = recipe.ingredients.find((r) => r.ingredientId === i.id);
+        if (req) {
+          return { ...i, count: i.count - req.count * amount };
+        }
+        return i;
+      });
+      const newRecipes = s.recipes.map((r) =>
+        r.id === recipeId ? { ...r, prepared: r.prepared + amount } : r
+      );
+      return { ingredients: newIngredients, recipes: newRecipes };
+    });
+    return amount;
   },
 
   startNight: () => {
@@ -417,6 +453,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     }
     set((s) => ({
       phase: "settlement",
+      gold: s.gold + foodRevenue,
       todayRevenue: foodRevenue + s.waveReward,
     }));
     get().saveProgress();

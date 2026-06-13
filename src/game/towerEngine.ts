@@ -247,7 +247,7 @@ export function gameTick(now: number) {
       useGameStore.getState().setWaveInProgress(false);
       setTimeout(() => useGameStore.getState().finishAllWaves(), 800);
     } else {
-      useGameStore.getState().setWaveInProgress(false);
+      useGameStore.getState().nextWave();
     }
   }
 }
